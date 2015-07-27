@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+compile('log4j:log4j:1.2.17'){
+	transitive=false
+	}
+}
