@@ -7,11 +7,13 @@ import org.junit.Test;
 import org.junit.*;
 
 public class BulkEmailTestApp {
-	String userName = null;
-	String password = null;
+	String userName;
+	String password;
+	boolean isSent;
 	
 	@Before
 	public void init() {
+		isSent = true;
 		SendBulkEmail sendBulkEmail = new SendBulkEmail();
 		System.out.println("Provide UserName");
 		Scanner scanner = new Scanner(System.in);
@@ -22,8 +24,8 @@ public class BulkEmailTestApp {
 	
 	@Test
 	public void testSum() {
-		sendBulkEmail.sendEmail(userName, password);
-		assert()
+		boolean isMsgSent = sendBulkEmail.sendEmail(userName, password);
+		assertEquals(isMsgSent, isSent);
 	}
 
 }
