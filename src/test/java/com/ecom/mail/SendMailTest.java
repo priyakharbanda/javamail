@@ -14,6 +14,6 @@ public class SendMailTest {
 	public void testSendMail() throws MessagingException {
 		SendMail classUnderTest = new SendMail();
 		Address[] toAddresses = { new InternetAddress("prashantsahu034@gmail.com")};
-		assertTrue(classUnderTest.sendMessage("sahuprashanta@gmail.com", "xxxxxxxx",toAddresses));
+		assertTrue(classUnderTest.sendMessage("Subject Testing", "Body content",toAddresses));
 	}
 }
