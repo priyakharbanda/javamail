@@ -1,7 +1,5 @@
 package com.ecom.mail;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -23,7 +21,7 @@ public class SendMail {
 			Address[] toAddresses) {
 
 		logger.info("Start of sendMessage");
-		Properties props = getProperties();
+		Properties props = PropertyUtil.loadProperties("config.properties");
 		String username = props.getProperty("mail.username");
 
 		// Create session
@@ -58,20 +56,6 @@ public class SendMail {
 
 		return true;
 
-	}
-
-	private Properties getProperties() {
-
-		Properties props = new Properties();
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		try (InputStream resourceStream = loader
-				.getResourceAsStream("config.properties")) {
-			props.load(resourceStream);
-		} catch (IOException e) {
-			logger.error("Unable to load properties file", e);
-		}
-
-		return props;
 	}
 
 }
