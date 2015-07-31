@@ -1,48 +1,33 @@
 package com.bulkmessages.poc;
 
-//File Name SendBulkSms.java
 
-import java.util.*;
-import java.io.*;
-import java.net.InetAddress;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 
 public class SendBulkEmail {
 
-	public static void main(String[] argv) {
-		SendBulkEmail sendBulkEmail = new SendBulkEmail();
-		System.out.println("Provide UserName");
-		Scanner scanner = new Scanner(System.in);
-		String userName = scanner.nextLine();
-		System.out.println("Provide Password");
-		String password = scanner.nextLine();
-		sendBulkEmail.sendEmail(userName, password);
-	}
+	private static final Logger LOGGER = Logger.getLogger(SendBulkEmail.class.getName());
 
-	public boolean sendEmail(final String userName, final String password)
-	{    
-		boolean isSent = false;
-		
-		// Recipient's email ID needs to be mentioned.
-		String to = "receipient@gmail.com";
+	public boolean sendEmails(Address recAddress[], String subject, String emailBody)
+	{    	
+		boolean isSent = true;
+		//Load Configurations from Property file
+		Properties properties = PropertyUtil.getProperties();
+		final String userName = properties.getProperty("username");
+		final String password = properties.getProperty("password");
 
-		// Sender's email ID needs to be mentioned
-		String from = "sender@gmail.com";
-
-		// Using gmail smtp gateway for sending emails
-		String host = "smtp.gmail.com";
-		String port = "587";
-
-		// Get system properties
-		Properties properties = System.getProperties();
-
-		// Setup mail server
-		properties.setProperty("mail.smtp.host", host);
-		properties.setProperty("mail.smtp.port", port);
-		properties.setProperty("mail.smtp.auth", "true");
-		properties.setProperty("mail.smtp.starttls.enable", "true");
 
 		Authenticator auth = new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -50,7 +35,7 @@ public class SendBulkEmail {
 			}
 		};
 
-		//System.out.println("Auth Done!");
+		//Create Session
 		Session session = Session.getInstance(properties, auth);
 
 		try{
@@ -58,27 +43,25 @@ public class SendBulkEmail {
 			Message message = new MimeMessage(session);
 
 			// Set From: header field of the header.
-			message.setFrom(new InternetAddress(from));
+			message.setFrom(new InternetAddress(properties.getProperty("sender.address")));
 
 			// Set To: header field of the header.
-			message.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(to));
+			message.setRecipients(Message.RecipientType.TO,recAddress);
 
 			// Set Subject: header field
-			message.setSubject("Subject Line!");
+			message.setSubject(subject);
 
 			// Now set the actual message
-			message.setText("Here is the actual message");
+			message.setText(emailBody);
 
 			// Send message
 			Transport.send(message);
-			isSent = true;
-			System.out.println("Message sent successfully....");
-		}catch (MessagingException ex) {
+			LOGGER.log(Level.INFO, "Message sent successfully....");
+		} catch (MessagingException ex) {
+			isSent = false;
+			LOGGER.log(Level.SEVERE, "Error while sending message: "+ex);
 			ex.printStackTrace();
-		} finally {
-			return isSent;
-		}
+		} 
+		return isSent;
 	}
 }
-
